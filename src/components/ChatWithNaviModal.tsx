@@ -188,7 +188,7 @@ export const ChatWithNaviModal: React.FC<ChatWithNaviModalProps> = ({
         }));
 
       const chat = ai.chats.create({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-1.5-flash',
         history: chatHistory.slice(-10),
         config: {
           systemInstruction: 'Eres Navi 🦉, una asistente virtual inteligente, empática y amigable para jóvenes en la plataforma "Unidas por un camino seguro". Respondes dudas sobre salud sexual, anticonceptivos, derechos, prevención de violencia (Línea 100, Línea 113 opción 3), pero también ayudas con tareas del colegio, ciencia, tecnología y cualquier duda cotidiana con un tono cálido, juvenil, sin juzgar y directo al grano en español.',
