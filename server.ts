@@ -250,11 +250,11 @@ app.post("/api/chat", async (req, res) => {
         });
 
         let response;
-        let usedModel = "gemini-3.7-flash";
+        let usedModel = "gemini-1.5-flash";
 
         try {
           response = await ai.models.generateContent({
-            model: "gemini-3.7-flash",
+            model: "gemini-1.5-flash",
             contents,
             config: {
               systemInstruction: NAVI_SYSTEM_PROMPT + langInstruction,
@@ -262,10 +262,10 @@ app.post("/api/chat", async (req, res) => {
             },
           });
         } catch (modelErr) {
-          console.warn("Retrying with gemini-2.5-flash...", modelErr);
-          usedModel = "gemini-2.5-flash";
+          console.warn("Retrying with gemini-1.5-flash...", modelErr);
+          usedModel = "gemini-1.5-flash";
           response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents,
             config: {
               systemInstruction: NAVI_SYSTEM_PROMPT + langInstruction,
