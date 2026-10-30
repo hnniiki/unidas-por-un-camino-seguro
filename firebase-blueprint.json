@@ -1,0 +1,32 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with gamification stats, streak and preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID" },
+        "username": { "type": "string", "description": "Anonymous pseudonym" },
+        "displayName": { "type": "string", "description": "Display name" },
+        "age": { "type": "number", "description": "Age in years" },
+        "birthDate": { "type": "string", "description": "Birthdate string" },
+        "avatarIcon": { "type": "string", "description": "Avatar emoji" },
+        "avatarColor": { "type": "string", "description": "Avatar theme color" },
+        "interests": { "type": "array", "description": "List of selected topics" },
+        "isGuest": { "type": "boolean", "description": "Whether this is a temporary guest account" },
+        "createdAt": { "type": "string", "description": "Creation ISO date" },
+        "xp": { "type": "number", "description": "Total XP score" },
+        "streak": { "type": "number", "description": "Consecutive days streak" },
+        "lastActiveDate": { "type": "string", "description": "Last active date YYYY-MM-DD" },
+        "passwordHash": { "type": "string", "description": "Hashed password for login verification" }
+      },
+      "required": ["id", "username", "age", "xp", "streak"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Collection of registered user accounts and gamification profiles"
+    }
+  }
+}

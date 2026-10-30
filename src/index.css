@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-plum: #421D46;
+  --color-brand-slate: #523D5B;
+  --color-brand-lilac: #8E65A0;
+  --color-brand-soft: #F3ECF8;
+  --color-brand-cream: #FAF7F5;
+}
+
+:root {
+  --color-plum-dark: #421D46;
+  --color-slate-purple: #523D5B;
+  --color-lilac-medium: #8E65A0;
+  --color-lilac-light: #F3ECF8;
+  --color-cream-sand: #FAF7F5;
+}
+
+@layer base {
+  body {
+    background-color: #FAF7F5;
+    color: #2D1432;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+}
+
+.dark body {
+  background-color: #160B19;
+  color: #F8F4FA;
+}
+
+/* Custom Palette Utilities with strict accessibility & contrast */
+.bg-brand-plum {
+  background-color: #421D46;
+}
+.text-brand-plum {
+  color: #421D46;
+}
+.dark .text-brand-plum {
+  color: #F5EBFB;
+}
+.border-brand-plum {
+  border-color: #421D46;
+}
+
+.bg-brand-slate {
+  background-color: #523D5B;
+}
+.text-brand-slate {
+  color: #4A3552;
+}
+.dark .text-brand-slate {
+  color: #E8DEF0;
+}
+.border-brand-slate {
+  border-color: #6E537A;
+}
+
+.bg-brand-lilac {
+  background-color: #8E65A0;
+}
+.text-brand-lilac {
+  color: #5A356F;
+}
+.dark .text-brand-lilac {
+  color: #EBDCF3;
+}
+.border-brand-lilac {
+  border-color: #A37FB7;
+}
+
+.bg-brand-soft {
+  background-color: #F3ECF8;
+}
+.text-brand-soft {
+  color: #4A2B55;
+}
+.dark .text-brand-soft {
+  color: #F3EAF8;
+}
+.border-brand-soft {
+  border-color: #DBCDE3;
+}
+
+.bg-brand-cream {
+  background-color: #FAF7F5;
+}
+.text-brand-cream {
+  color: #38243E;
+}
+.dark .text-brand-cream {
+  color: #F8F4FA;
+}
+.border-brand-cream {
+  border-color: #E7DDD3;
+}
+
+/* Glass & Card effects with exact contrast */
+.card-brand {
+  background-color: #FFFFFF;
+  border: 1px solid #E5DCE8;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px -2px rgba(66, 29, 70, 0.06);
+}
+
+.card-brand-dark {
+  background-color: #27142A;
+  border: 1px solid #5A3462;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+}
+
+/* High-contrast fallbacks for legacy hardcoded hex classes */
+.text-\[\#7A6786\] {
+  color: #4D3855 !important;
+}
+.dark .text-\[\#7A6786\] {
+  color: #E8DEF0 !important;
+}
+
+.text-\[\#5B4861\] {
+  color: #3D2944 !important;
+}
+.dark .text-\[\#5B4861\] {
+  color: #EFE7F6 !important;
+}
+
+.text-\[\#A58DB5\] {
+  color: #5A356F !important;
+}
+.dark .text-\[\#A58DB5\] {
+  color: #EADCF2 !important;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes pulseSlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.9;
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 3s ease-in-out infinite;
+}
+
+/* Custom scrollbar matching palette */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF7F5;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #1E0F22;
+}
+::-webkit-scrollbar-thumb {
+  background: #8E65A0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #523D5B;
+}

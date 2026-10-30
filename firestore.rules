@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection allows read/write for profiles and streak updates
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+    
+    // Community questions & answers allow public read & authenticated/anonymous write
+    match /community_questions/{questionId} {
+      allow read, write: if true;
+    }
+
+    match /community_answers/{answerId} {
+      allow read, write: if true;
+    }
+
+    // Default catch-all
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Unidas por un Camino Seguro - Prevención del Embarazo Adolescente",
+  "description": "Plataforma interactiva para la prevención del embarazo adolescente, orientación a familias, rutas de denuncia y protección de derechos, con el chatbot consejero Navi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
