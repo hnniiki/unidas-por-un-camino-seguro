@@ -82,7 +82,6 @@ const TOPIC_PRESETS = [
   }
 ];
 
-// Helper to render markdown text with bolding and lists
 const RenderFormattedMessage: React.FC<{ text: string; isNavi: boolean; darkMode: boolean }> = ({ text, isNavi, darkMode }) => {
   const lines = text.split('\n');
 
@@ -93,12 +92,8 @@ const RenderFormattedMessage: React.FC<{ text: string; isNavi: boolean; darkMode
         if (!trimmed) {
           return <div key={idx} className="h-1" />;
         }
-
-        // Bullet line
         const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.startsWith('• ');
         const cleanContent = isBullet ? trimmed.replace(/^[-*•]\s+/, '') : trimmed;
-
-        // Parse bold segments
         const parts = cleanContent.split(/(\*\*.*?\*\*)/g);
 
         const renderedContent = parts.map((part, pIdx) => {
@@ -182,13 +177,9 @@ export const ChatWithNaviModal: React.FC<ChatWithNaviModalProps> = ({
     setIsTyping(true);
 
     try {
-      // Importamos dinámicamente el SDK de Google Gen AI
       const { GoogleGenAI } = await import('@google/genai');
-      
-      // Inicializamos con la variable de entorno que guardamos en Vercel
       const ai = new GoogleGenAI({ apiKey: (import.meta as any).env.VITE_GEMINI_API_KEY });
 
-      // Preparamos el historial para darle contexto a Navi
       const chatHistory = messages
         .filter(m => m.text && m.text.trim() !== '')
         .map(m => ({
@@ -196,7 +187,6 @@ export const ChatWithNaviModal: React.FC<ChatWithNaviModalProps> = ({
           parts: [{ text: m.text }],
         }));
 
-      // Iniciamos el chat con el modelo gemini-2.5-flash y sus instrucciones de personalidad (System Instruction)
       const chat = ai.chats.create({
         model: 'gemini-2.5-flash',
         history: chatHistory.slice(-10),
@@ -205,7 +195,6 @@ export const ChatWithNaviModal: React.FC<ChatWithNaviModalProps> = ({
         }
       });
 
-      // Enviamos el mensaje del usuario
       const result = await chat.sendMessage({ message: query });
       const botReply = result.text || 'Recuerda que siempre puedes acudir a tu centro de salud más cercano o llamar gratis a la Línea 113 opción 3.';
 
@@ -224,7 +213,6 @@ export const ChatWithNaviModal: React.FC<ChatWithNaviModalProps> = ({
       setMessages(prev => [...prev, naviMsg]);
       if (onAddXp) onAddXp(20);
 
-      // Notificación nativa si la pestaña está en segundo plano
       if (document.hidden || !document.hasFocus()) {
         const cleanSnippet = botReply.replace(/[*#_`~[\]()]/g, '').slice(0, 120);
         notificationService.showNotification({
@@ -241,7 +229,6 @@ export const ChatWithNaviModal: React.FC<ChatWithNaviModalProps> = ({
       }
     } catch (err) {
       console.error('Error con la IA de Gemini:', err);
-      // Fallback amigable en caso de algún imprevisto
       const fallbackMsg: ChatMessage = {
         id: `navi-err-${Date.now()}`,
         sender: 'navi',
@@ -254,4 +241,272 @@ export const ChatWithNaviModal: React.FC<ChatWithNaviModalProps> = ({
       setIsTyping(false);
     }
   };
+
+  const handleClearHistory = () => {
+    speechService.stop();
+    setPlayingAudioId(null);
+    setMessages(INITIAL_MESSAGES);
+  };
+
+  const handleCopy = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleToggleSpeakMessage = (msgId: string, text: string) => {
+    if (playingAudioId === msgId) {
+      speechService.stop();
+      setPlayingAudioId(null);
+    } else {
+      setPlayingAudioId(msgId);
+      speechService.speak(text);
+    }
+  };
+
+  const handleExportChat = () => {
+    const textContent = messages
+      .map(m => `[${m.timestamp}] ${m.sender === 'navi' ? 'Navi (Asistente IA)': 'Tú'}:\n${m.text}`)
+      .join('\n\n---\n\n');
+    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `orientacion_navi_ia_${new Date().toISOString().slice(0, 10)}.txt`;
+    link.click();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+      <div 
+        className={`w-full max-w-2xl h-[94vh] sm:h-[88vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border ${
+          darkMode ? 'bg-[#241226] border-[#5B3E60] text-white' : 'bg-white border-[#E5D7DE] text-[#2D1A30]'
+        }`}
+      >
+        <div className="p-3.5 sm:p-4 bg-[#4B2E4F] text-white flex items-center justify-between border-b border-[#5B3E60] flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <NaviMascot size="sm" showBadge={false} animated={true} />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-[#4B2E4F] rounded-full animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-extrabold text-sm sm:text-base tracking-tight">Navi</h3>
+                <span className="inline-flex items-center gap-1 text-[10px] bg-gradient-to-r from-amber-400 to-amber-200 text-[#3B1F3D] font-black px-2 py-0.5 rounded-full shadow-2xs">
+                  <Sparkles className="w-3 h-3 text-[#4B2E4F]" />
+                  Gemini AI
+                </span>
+                <span className="hidden md:inline-flex items-center gap-1 text-[10px] text-white/80 bg-white/10 px-2 py-0.5 rounded-full">
+                  <ShieldCheck className="w-3 h-3 text-emerald-300" />
+                  100% Anónimo
+                </span>
+              </div>
+              <span className="text-[11px] text-[#F9F5F8]/85 italic block">
+                “¿Tienes una duda? Suéltala. Navi no te va a juzgar ni mirar raro.”
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setAutoSpeak(!autoSpeak)}
+              className={`p-2 rounded-lg text-xs transition ${
+                autoSpeak 
+                  ? 'bg-amber-400 text-[#3B1F3D] font-bold shadow-xs' 
+                  : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+              title={autoSpeak ? 'Lectura por voz activada' : 'Activar lectura automática'}
+              aria-label="Alternar lectura por voz"
+            >
+              {autoSpeak ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            </button>
+
+            <button
+              onClick={handleExportChat}
+              className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 text-xs transition"
+              title="Descargar conversación"
+              aria-label="Descargar chat"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={handleClearHistory}
+              className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 text-xs transition"
+              title="Borrar historial de chat"
+              aria-label="Borrar chat"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={() => {
+                speechService.stop();
+                onClose();
+              }}
+              className="p-2 rounded-lg bg-white/10 text-white hover:bg-red-500 text-xs transition ml-1"
+              title="Cerrar ventana de chat"
+              aria-label="Cerrar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-red-950/90 text-red-100 text-[11px] px-3.5 py-1.5 flex items-center justify-between border-b border-red-500/30 flex-shrink-0">
+          <div className="flex items-center gap-1.5 font-medium">
+            <ShieldAlert className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+            <span>¿Peligro o agresión? Llama gratis 24/7 a la <strong>Línea 100</strong> o al <strong>113 (Opción 3)</strong></span>
+          </div>
+          <a 
+            href="tel:100" 
+            className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-0.5 rounded-md font-bold text-xs transition shadow-xs"
+          >
+            Llamar 100
+          </a>
+        </div>
+
+        <div className="px-3 py-2 bg-stone-50/90 dark:bg-[#1E0D20] border-b border-stone-200/80 dark:border-[#4B2E4F]/60 overflow-x-auto flex gap-1.5 flex-shrink-0 scrollbar-none">
+          {TOPIC_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              onClick={() => handleSendMessage(preset.prompt)}
+              className="whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-[#321734] text-[#4B2E4F] dark:text-[#E8C2B0] border border-stone-200 dark:border-[#5B3E60] hover:border-[#4B2E4F] hover:bg-[#FAF6F8] dark:hover:bg-[#432046] transition shadow-2xs"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3.5 bg-[#FAF6F8]/60 dark:bg-[#1A0A1C]">
+          {messages.map((msg) => {
+            const isNavi = msg.sender === 'navi';
+            const isPlaying = playingAudioId === msg.id;
+
+            return (
+              <div
+                key={msg.id}
+                className={`flex gap-2.5 max-w-[92%] sm:max-w-[85%] ${
+                  isNavi ? 'mr-auto' : 'ml-auto flex-row-reverse'
+                }`}
+              >
+                {isNavi && (
+                  <div className="flex-shrink-0 mt-0.5">
+                    <NaviMascot size="sm" showBadge={false} animated={false} />
+                  </div>
+                )}
+
+                <div className="space-y-1 w-full">
+                  <div
+                    className={`p-3.5 rounded-2xl shadow-xs transition ${
+                      isNavi
+                        ? 'bg-white dark:bg-[#2C152E] text-[#2D1A30] dark:text-stone-100 border border-[#E5D7DE] dark:border-[#5B3E60] rounded-tl-none'
+                        : 'bg-[#4B2E4F] text-white rounded-tr-none'
+                    }`}
+                  >
+                    <RenderFormattedMessage text={msg.text} isNavi={isNavi} darkMode={darkMode} />
+
+                    {isNavi && msg.suggestedActions && msg.suggestedActions.length > 0 && (
+                      <div className="mt-3 pt-2.5 border-t border-stone-200/70 dark:border-[#4B2E4F]/60 flex flex-wrap gap-1.5">
+                        <span className="text-[10px] font-bold text-stone-400 dark:text-stone-400 w-full mb-0.5">
+                          Sugerencias relacionadas:
+                        </span>
+                        {msg.suggestedActions.map((act, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleSendMessage(act)}
+                            className="bg-[#FAF6F8] dark:bg-[#3B1F3D] text-[#4B2E4F] dark:text-[#E8C2B0] text-[11px] font-medium px-2.5 py-1 rounded-lg hover:bg-[#EEDFE6] dark:hover:bg-[#4E2750] transition border border-[#DEC9D4] dark:border-[#6B4B70] flex items-center gap-1 shadow-2xs"
+                          >
+                            <span>{act}</span>
+                            <ChevronRight className="w-3 h-3 opacity-60" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={`flex items-center gap-2 text-[10px] text-stone-400 dark:text-stone-400 ${
+                    isNavi ? 'pl-1' : 'justify-end pr-1'
+                  }`}>
+                    <span>{msg.timestamp}</span>
+
+                    {isNavi && (
+                      <div className="flex items-center gap-1.5 ml-1">
+                        <button
+                          onClick={() => handleToggleSpeakMessage(msg.id, msg.text)}
+                          className={`p-1 rounded transition flex items-center gap-1 ${
+                            isPlaying 
+                              ? 'text-amber-500 font-bold animate-pulse' 
+                              : 'hover:text-[#4B2E4F] dark:hover:text-white'
+                          }`}
+                          title={isPlaying ? 'Pausar voz' : 'Escuchar respuesta de Navi'}
+                        >
+                          <Volume2 className="w-3 h-3" />
+                          <span>{isPlaying ? 'Hablando...' : 'Escuchar'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleCopy(msg.id, msg.text)}
+                          className="p-1 rounded hover:text-[#4B2E4F] dark:hover:text-white transition flex items-center gap-1"
+                          title="Copiar texto"
+                        >
+                          {copiedId === msg.id ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-500" />
+                              <span className="text-emerald-500 font-bold">Copiado</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Copiar</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {isTyping && (
+            <div className="flex items-center gap-2.5 text-xs text-stone-500 dark:text-stone-300 animate-fadeIn">
+              <NaviMascot size="sm" showBadge={false} animated={true} />
+              <div className="bg-white dark:bg-[#2C152E] px-3.5 py-2 rounded-2xl rounded-tl-none border border-stone-200 dark:border-[#5B3E60] flex items-center gap-2 shadow-2xs">
+                <span className="w-1.5 h-1.5 bg-[#4B2E4F] dark:bg-[#E8C2B0] rounded-full animate-bounce [animation-delay:-0.3s]" />
+                <span className="w-1.5 h-1.5 bg-[#4B2E4F] dark:bg-[#E8C2B0] rounded-full animate-bounce [animation-delay:-0.15s]" />
+                <span className="w-1.5 h-1.5 bg-[#4B2E4F] dark:bg-[#E8C2B0] rounded-full animate-bounce" />
+                <span className="text-[11px] font-medium ml-1 text-stone-600 dark:text-stone-300">
+                  Navi está analizando tu consulta con IA...
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        <div className="p-3 bg-white dark:bg-[#241226] border-t border-stone-200 dark:border-[#5B3E60] flex items-center gap-2 flex-shrink-0">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+            placeholder="Pregúntale lo que sea a Navi (salud, tareas, dudas, consejos, ciencia)..."
+            className="flex-1 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-[#5B3E60] bg-stone-50 dark:bg-[#1A0A1C] text-[#2D1A30] dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4B2E4F] placeholder:text-stone-400"
+          />
+          <button
+            onClick={() => handleSendMessage()}
+            disabled={!inputText.trim() || isTyping}
+            className="bg-[#4B2E4F] hover:bg-[#3B1F3D] disabled:opacity-40 text-white px-3.5 py-2.5 rounded-xl transition shadow-sm flex items-center justify-center flex-shrink-0 gap-1.5 font-bold text-xs"
+            title="Enviar mensaje"
+          >
+            <span className="hidden sm:inline">Enviar</span>
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
