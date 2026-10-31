@@ -1,5 +1,4 @@
-
-import { handleNaviChat } from "../lib/navi-chat";
+import { handleNaviChat } from "../lib/navi-chat.js";
 
 export default async function handler(
   req: any,
