@@ -18,7 +18,6 @@ import { InteractiveGamesSection } from './components/InteractiveGamesSection';
 import { CaseTrackingAndAlerts } from './components/CaseTrackingAndAlerts';
 import { StaffTrainingSection } from './components/StaffTrainingSection';
 import { AnonymousQuestionsSection } from './components/AnonymousQuestionsSection';
-import { CitizenMapAndReports } from './components/CitizenMapAndReports';
 import { EducationalResourcesSection } from './components/EducationalResourcesSection';
 import { AboutUsSection } from './components/AboutUsSection';
 import { ChatWithNaviModal } from './components/ChatWithNaviModal';
@@ -334,15 +333,45 @@ export default function App() {
           </div>
         )}
 
-        {activeTab === 'mapa' && (
-          <div className="animate-fadeIn">
-            <CitizenMapAndReports
-              darkMode={darkMode}
-              onOpenChat={() => setIsChatOpen(true)}
-              onAddXp={handleAddXp}
-            />
-          </div>
-        )}
+        
+{activeTab === 'mapa' && (
+  <div className="animate-fadeIn max-w-4xl mx-auto py-8">
+    <div
+      className={`rounded-3xl p-6 sm:p-10 text-center border shadow-lg ${
+        darkMode
+          ? "bg-[#321734] border-[#5B3E60] text-white"
+          : "bg-white border-[#E5D7DE] text-[#2D1A30]"
+      }`}
+    >
+      <div className="text-6xl mb-5">🗺️</div>
+
+      <h2 className="text-2xl sm:text-3xl font-black text-[#8B5E83] dark:text-[#E8C2B0] mb-4">
+        Centros de Salud del Perú
+      </h2>
+
+      <p className="text-sm sm:text-base opacity-80 mb-6">
+        Encuentra establecimientos de salud cerca de ti.
+        Explora el mapa interactivo del Perú, identifica
+        centros médicos y consulta cómo llegar.
+      </p>
+
+      <button
+        type="button"
+        onClick={() => setIsReportModalOpen(true)}
+        className="bg-[#4B2E4F] hover:bg-[#6B4370] text-white font-bold px-8 py-4 rounded-xl shadow-md transition transform hover:scale-105"
+      >
+        📍 Buscar centros de salud cercanos
+      </button>
+
+      <p className="text-xs opacity-60 mt-5">
+        La ubicación solamente se solicitará con tu permiso.
+        Los resultados dependen de los establecimientos
+        registrados en OpenStreetMap.
+      </p>
+    </div>
+  </div>
+)}
+
 
         {activeTab === 'recursos' && (
           <div className="animate-fadeIn">

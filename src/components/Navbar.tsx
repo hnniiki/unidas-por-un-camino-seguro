@@ -129,7 +129,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   const secondaryNavItems = [
     { id: 'familias', label: t.navFamilias || 'Familias & Hijos', icon: Shield, desc: 'Diálogo familiar, crianza y prevención' },
     { id: 'nosotras', label: t.navNosotras || 'Sobre Nosotras 💗', icon: Heart, desc: 'Conoce a las fundadoras Nikolle y Alexandra' },
-    { id: 'mapa', label: t.navMap || 'Mapa Seguro & Reportes', icon: Compass, desc: 'Puntos seguros y alertas comunitarias' },
+    
+{
+  id: 'mapa',
+  label: '🏥 Centros de Salud Cercanos',
+  icon: MapPin,
+  desc: 'Encuentra centros de salud cerca de ti'
+},
+
     { id: 'recursos', label: t.navRecursos || 'Guías & Recursos', icon: BookOpen, desc: 'Infografías y afiches en PDF descargables' },
     { id: 'seguimiento', label: t.navSeguimiento, icon: ClipboardList, desc: 'Consulta de tickets confidenciales' },
     { id: 'capacitacion', label: t.navCapacitacion, icon: GraduationCap, desc: 'Guías para docentes y personal de salud' },
